@@ -1,0 +1,10 @@
+.env
+.gradle/
+build/
+.idea/
+*.iml
+*.class
+*.jar
+*.war
+*.log
+.DS_Store

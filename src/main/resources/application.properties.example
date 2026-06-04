@@ -1,0 +1,47 @@
+spring.application.name=ManagamentSystemSchool
+# Jackson Configuration
+spring.jackson.serialization.write-dates-as-timestamps=false
+spring.jackson.serialization.fail-on-empty-beans=false
+
+# Database Configuration
+# Uses PostgreSQL by default; override with DB_URL / DB_USERNAME / DB_PASSWORD when needed.
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5433/managmentSystemSchool}
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD:}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA/Hibernate Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=true
+
+# Server Configuration
+server.port=${PORT:8080}
+
+# JWT Configuration
+# Set a strong secret via environment variable JWT_SECRET
+jwt.secret=${JWT_SECRET:}
+jwt.expiration=86400000
+
+# OAuth2 Google Configuration
+# Configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment or .env file.
+# Steps: 1. Add redirect URI: http://localhost:8080/login/oauth2/code/google to Google Console
+#        2. Set the credentials as environment variables
+#        3. Restart backend
+spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID:}
+spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET:}
+spring.security.oauth2.client.registration.google.scope=email,profile
+spring.security.oauth2.client.provider.google.user-name-attribute=sub
+
+# Application URLs
+app.oauth2.redirect-url=${OAUTH2_REDIRECT_URL:http://localhost:5173/oauth2/redirect}
+
+# Error Handling
+server.error.include-message=always
+server.error.include-binding-errors=always
+server.error.include-stacktrace=on_param
+server.error.include-exception=false
+spring.web.resources.add-mappings=false
+
+# NOTE: Do not commit `application.properties` with real secrets. Use environment variables or a secret manager.
+

@@ -1,0 +1,10 @@
+.gradle/
+build/
+.git/
+.gitattributes
+.gitignore
+.idea/
+*.md
+*.bat
+.gitkeep
+.env

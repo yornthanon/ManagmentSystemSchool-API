@@ -1,0 +1,183 @@
+package com.online.managamentsystemschool.controller;
+
+import com.online.managamentsystemschool.dto.DTOMapper;
+import com.online.managamentsystemschool.dto.request.LoginRequest;
+import com.online.managamentsystemschool.dto.response.LoginResponse;
+import com.online.managamentsystemschool.dto.response.UserDTO;
+import com.online.managamentsystemschool.entity.User;
+import com.online.managamentsystemschool.entity.enums.Role;
+import com.online.managamentsystemschool.repository.UserRepository;
+import com.online.managamentsystemschool.util.JwtTokenProvider;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import lombok.Data;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Login with username/password (only for ADMIN and local users)
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        try {
+            // Find user by email or username
+            User user = userRepository.findByEmail(request.getEmail())
+                    .or(() -> userRepository.findByUsername(request.getEmail()))
+                    .orElse(null);
+
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Invalid email or username"));
+            }
+
+            // Check if password matches
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Invalid password"));
+            }
+
+            // Generate JWT token
+            String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().toString());
+
+            UserDTO userDTO = DTOMapper.toUserDTO(user);
+            return ResponseEntity.ok(new LoginResponse(token, userDTO));
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse("Authentication failed: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Register new user (STUDENT only via OAuth2 or form submission)
+     */
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        // Check if user already exists
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Email already registered"));
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setFullName(request.getFullName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.STUDENT);  // Default role is STUDENT
+        user.setProvider(null);
+        user.setProviderId(null);
+
+        User savedUser = userRepository.save(user);
+
+        String token = jwtTokenProvider.generateToken(savedUser.getEmail(), savedUser.getRole().toString());
+        UserDTO userDTO = DTOMapper.toUserDTO(savedUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new LoginResponse(token, userDTO));
+    }
+
+    /**
+     * Logout endpoint (client-side would discard token)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok(new MessageResponse("Logged out successfully"));
+    }
+
+    /**
+     * Validate token endpoint
+     */
+    @GetMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Invalid token format"));
+        }
+
+        String jwt = token.substring(7);
+        if (jwtTokenProvider.validateToken(jwt)) {
+            String email = jwtTokenProvider.getEmailFromToken(jwt);
+            String role = jwtTokenProvider.getRoleFromToken(jwt);
+            return ResponseEntity.ok(new TokenValidationResponse(true, email, role));
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("Invalid token"));
+    }
+
+    /**
+     * Get current user info from token
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Invalid token format"));
+        }
+
+        String jwt = token.substring(7);
+        if (jwtTokenProvider.validateToken(jwt)) {
+            String email = jwtTokenProvider.getEmailFromToken(jwt);
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null) {
+                return ResponseEntity.ok(DTOMapper.toUserDTO(user));
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("Unauthorized"));
+    }
+
+    // Inner classes for request/response
+    @Data
+    public static class RegisterRequest {
+        public String username;
+        public String email;
+        public String password;
+        public String fullName;
+    }
+
+    @Data
+    public static class ErrorResponse {
+        public String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+    }
+
+    @Data
+    public static class MessageResponse {
+        public String message;
+
+        public MessageResponse(String message) {
+            this.message = message;
+        }
+    }
+
+    @Data
+    public static class TokenValidationResponse {
+        public Boolean valid;
+        public String email;
+        public String role;
+
+        public TokenValidationResponse(Boolean valid, String email, String role) {
+            this.valid = valid;
+            this.email = email;
+            this.role = role;
+        }
+    }
+}
