@@ -24,9 +24,7 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    /**
-     * Generate JWT token for user
-     */
+
     public String generateToken(String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
@@ -40,9 +38,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    /**
-     * Get claims from JWT token
-     */
+
     private Claims getAllClaimsFromToken(String token) throws JwtException {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -51,9 +47,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    /**
-     * Get email from JWT token
-     */
+
     public String getEmailFromToken(String token) {
         try {
             return getAllClaimsFromToken(token).getSubject();
@@ -62,9 +56,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * Get role from JWT token
-     */
+
     public String getRoleFromToken(String token) {
         try {
             return (String) getAllClaimsFromToken(token).get("role");
@@ -73,9 +65,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * Validate JWT token
-     */
+
     public Boolean validateToken(String token) {
         try {
             Jwts.parser()

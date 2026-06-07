@@ -27,9 +27,9 @@ public class DataInitialize implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
-            String password = adminPassword.isBlank() ? UUID.randomUUID().toString().substring(0, 12) : adminPassword;
+        String password = adminPassword.isBlank() ? UUID.randomUUID().toString().substring(0, 12) : adminPassword;
 
+        if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
             admin.setEmail("admin@gmail.com");
@@ -38,6 +38,13 @@ public class DataInitialize implements CommandLineRunner {
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
             log.info("Default admin created: admin@gmail.com / {}", password);
+        } else if (!adminPassword.isBlank()) {
+            User admin = userRepository.findByEmail("admin@gmail.com").get();
+            admin.setPassword(passwordEncoder.encode(password));
+            userRepository.save(admin);
+            log.info("Admin password updated: admin@gmail.com / {}", password);
+        } else {
+            log.info("Admin already exists: admin@gmail.com (password unchanged)");
         }
     }
 }

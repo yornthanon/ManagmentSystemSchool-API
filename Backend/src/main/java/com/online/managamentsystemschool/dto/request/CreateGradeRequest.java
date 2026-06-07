@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * DTO for creating/updating grades
- * Validates: Student ID, Subject ID, Classroom ID, and Score (0-100)
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

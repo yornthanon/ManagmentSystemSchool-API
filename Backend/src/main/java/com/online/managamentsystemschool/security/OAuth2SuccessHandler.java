@@ -58,10 +58,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     return userRepository.save(newUser);
                 });
 
-        // Generate JWT token
+
         String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().toString());
 
-        // Redirect to frontend with token
+
         String targetUrl = redirectUrl + "?token=" + token + "&email=" + user.getEmail() + "&role=" + user.getRole().toString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

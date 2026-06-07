@@ -19,18 +19,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Global Exception Handler for all REST API endpoints
- * Provides consistent error response format across the application
- */
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /**
-     * Handle validation errors (input validation fails)
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(
             MethodArgumentNotValidException ex,
@@ -49,9 +43,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle authentication errors (login fails, invalid credentials)
-     */
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(
             AuthenticationException ex,
@@ -66,9 +58,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle bad credentials during login
-     */
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(
             BadCredentialsException ex,
@@ -100,9 +90,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle endpoint not found (404)
-     */
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(
             NoHandlerFoundException ex,
@@ -134,9 +122,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle illegal arguments
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException ex,
@@ -151,9 +136,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle runtime exceptions
-     */
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(
             RuntimeException ex,
@@ -187,9 +170,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Build a consistent error response format
-     */
+
     private Map<String, Object> buildErrorResponse(
             HttpStatus status,
             String error,

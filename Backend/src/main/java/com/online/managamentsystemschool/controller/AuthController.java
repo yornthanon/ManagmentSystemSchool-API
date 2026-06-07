@@ -26,13 +26,11 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Login with username/password (only for ADMIN and local users)
-     */
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            // Find user by email or username
+
             User user = userRepository.findByEmail(request.getEmail())
                     .or(() -> userRepository.findByUsername(request.getEmail()))
                     .orElse(null);
@@ -48,7 +46,7 @@ public class AuthController {
                         .body(new ErrorResponse("Invalid password"));
             }
 
-            // Generate JWT token
+
             String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().toString());
 
             UserDTO userDTO = DTOMapper.toUserDTO(user);
@@ -60,12 +58,10 @@ public class AuthController {
         }
     }
 
-    /**
-     * Register new user (STUDENT only via OAuth2 or form submission)
-     */
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // Check if user already exists
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse("Email already registered"));
@@ -89,17 +85,13 @@ public class AuthController {
                 .body(new LoginResponse(token, userDTO));
     }
 
-    /**
-     * Logout endpoint (client-side would discard token)
-     */
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         return ResponseEntity.ok(new MessageResponse("Logged out successfully"));
     }
 
-    /**
-     * Validate token endpoint
-     */
+
     @GetMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
         if (token == null || !token.startsWith("Bearer ")) {
@@ -118,9 +110,7 @@ public class AuthController {
                 .body(new ErrorResponse("Invalid token"));
     }
 
-    /**
-     * Get current user info from token
-     */
+
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
         if (token == null || !token.startsWith("Bearer ")) {
@@ -141,7 +131,6 @@ public class AuthController {
                 .body(new ErrorResponse("Unauthorized"));
     }
 
-    // Inner classes for request/response
     @Data
     public static class RegisterRequest {
         public String username;

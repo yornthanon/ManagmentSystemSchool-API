@@ -46,16 +46,12 @@ public class AnnouncementService {
         return announcementRepository.save(announcement);
     }
 
-    /**
-     * Get announcement by ID
-     */
+
     public Optional<Announcement> getAnnouncementById(Integer id) {
         return announcementRepository.findById(id);
     }
 
-    /**
-     * Get all announcements
-     */
+
     public List<Announcement> getAllAnnouncements() {
         return announcementRepository.findAll();
     }
@@ -64,9 +60,7 @@ public class AnnouncementService {
         return announcementRepository.findAll(pageable);
     }
 
-    /**
-     * Get announcements by author
-     */
+
     public List<Announcement> getAnnouncementsByAuthor(Integer authorId) {
         return announcementRepository.findByAuthorId(authorId);
     }
@@ -78,9 +72,7 @@ public class AnnouncementService {
         return announcementRepository.findByPublishedAtBetween(startDate, endDate);
     }
 
-    /**
-     * Search announcements by title
-     */
+
     public List<Announcement> searchAnnouncementsByTitle(String title) {
         return announcementRepository.findByTitleContainingIgnoreCase(title);
     }
@@ -101,16 +93,12 @@ public class AnnouncementService {
         announcementRepository.deleteById(id);
     }
 
-    /**
-     * Get total announcements count
-     */
+
     public long getAnnouncementCount() {
         return announcementRepository.count();
     }
 
-    /**
-     * Get recent announcements
-     */
+
     public List<Announcement> getRecentAnnouncements(int limit) {
         return announcementRepository.findAllByOrderByPublishedAtDesc(PageRequest.of(0, limit));
     }

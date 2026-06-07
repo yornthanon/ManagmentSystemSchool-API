@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * DTO for marking attendance
- * Status must be: PRESENT, ABSENT, LATE, or EXCUSED
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
