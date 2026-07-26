@@ -1,0 +1,11 @@
+package com.online.managamentsystemschool.infrastructure.persistence.repository;
+
+import com.online.managamentsystemschool.infrastructure.persistence.entity.SubjectEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface SubjectJpaRepository extends JpaRepository<SubjectEntity, Integer> {
+    SubjectEntity findByNameIgnoreCase(String name);
+    List<SubjectEntity> findByNameContainingIgnoreCase(String name);
+}
