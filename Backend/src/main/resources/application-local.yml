@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/school_db
+    username: school
+    password: school
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-in-production}
+
+server:
+  port: 8080

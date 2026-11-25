@@ -1,0 +1,6 @@
+{
+  "name": "Scholara — School Management System",
+  "description": "Role-based academic operations, attendance, grading, enrollment, and school communications platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

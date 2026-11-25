@@ -1,4 +1,5 @@
 .env
+.env.local
 .gradle/
 build/
 .idea/
@@ -8,3 +9,7 @@ build/
 *.war
 *.log
 .DS_Store
+node_modules/
+dist/
+frontend/.vite/
+*.tsbuildinfo
