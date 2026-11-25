@@ -1,57 +1,39 @@
-# School Management System
+# School-ManagementSystem
 
-A role-based school management system with a Spring Boot backend and React frontend.
+Modular monolith Spring Boot (Java 21 + Gradle + PostgreSQL + Flyway) backend and React + Vite + TypeScript frontend for `ADMIN`, `TEACHER`, and `STUDENT` roles.
 
-## Structure
+## Environment Variables
 
-```
-School-ManagementSystem/
-├── backend/              # Spring Boot (Java 21) - admin scope
-└── frontend/             # React + TypeScript + Vite - admin scope
-```
+Backend (`backend/src/main/resources/application.yml`):
+- `DB_URL` (default `jdbc:postgresql://localhost:5432/school_management`)
+- `DB_USERNAME` (default `postgres`)
+- `DB_PASSWORD`
+- `JWT_SECRET` (required, minimum 32 characters)
+- `JWT_EXPIRATION_MS` (default `86400000`)
+- `ADMIN_EMAIL` (required on first run to seed the initial `ADMIN` account)
+- `ADMIN_PASSWORD` (required on first run to seed the initial `ADMIN` account)
+- `CORS_ALLOWED_ORIGINS` (default `http://localhost:5173,http://localhost:3000`)
 
-## Backend
+Frontend (`frontend/.env`):
+- `VITE_API_BASE_URL=http://localhost:8080`
 
-- **Java 21**, Spring Boot 3.4.1, Gradle
-- Spring Security + JWT (stateless)
-- Spring Data JPA + H2 (dev) / PostgreSQL (local)
-- Flyway migration (`db/migration/V1__init.sql`)
-- SpringDoc OpenAPI (Swagger UI)
-- Admin seeding on startup (`admin` / `admin123`)
+## Run Locally
 
-### Run
-
+### Backend
 ```bash
 cd backend
-./gradlew bootRun
+export DB_URL=jdbc:postgresql://localhost:5432/school_management
+export DB_USERNAME=postgres
+export DB_PASSWORD=your_postgres_password
+export JWT_SECRET=replace-with-at-least-32-char-random-secret
+export ADMIN_EMAIL=your_admin_email
+export ADMIN_PASSWORD=your_admin_password
+gradle bootRun
 ```
 
-Backend runs on `http://localhost:8080`.  
-Swagger UI: `http://localhost:8080/swagger-ui.html`
-
-## Frontend
-
-- React 19, TypeScript, Vite, Tailwind CSS
-- Admin-only pages (teacher/student not yet implemented)
-
-### Run
-
+### Frontend
 ```bash
 cd frontend
 npm install
-npm run dev   # http://localhost:3000
+npm run dev
 ```
-
-## Admin Scope
-
-Implemented modules:
-- `user/` — User management (ADMIN only)
-- `subject/` — Subjects CRUD
-- `classroom/` — Classrooms CRUD
-- `enrollment/` — Enrollments CRUD
-- `dashboard/` — Admin stats
-- `auth/` — Login + JWT
-- `attendance/` — placeholder
-- `grade/` — placeholder
-
-Teacher and student modules are not yet implemented.

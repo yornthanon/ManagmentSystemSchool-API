@@ -1,0 +1,13 @@
+# Copy to application-local.yml (gitignored) and run with --spring.profiles.active=local
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/school_management
+    username: postgres
+    password: your_postgres_password
+
+app:
+  jwt:
+    secret: replace-with-a-base64-or-256-bit-random-secret-key
+  admin:
+    email:
+    password:
